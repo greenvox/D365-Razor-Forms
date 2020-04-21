@@ -1,0 +1,295 @@
+﻿@using System.Configuration
+@using Microsoft.Xrm.Sdk
+@using Microsoft.Xrm.Sdk.Query
+@using Microsoft.Xrm.Tooling.Connector
+@using Microsoft.Xrm.Sdk.Linq
+@using D365RazorForms
+@{
+    Layout = "~/Layouts/_Layout.cshtml";
+
+    @*What is the entity being updated?*@
+    EntityName = "msdyn_workorder";
+
+    @*Form UI components: Logo, name and title.*@
+    var CompanyLogo = "https://i.imgur.com/0dQsLs6.png";
+    var CompanyName = "Powell Electrical Systems, Inc.";
+    var FormTitle = "Field Service Site Access Requirements";
+
+    @* Define the query string parameter you want to use. For example, in "formsapp.azurewebsites.net/update?ref=123", "ref" is the parameter which will be used to search the dynamics entity. *@
+    var ReferenceId = string.Empty;
+    ReferenceId = Request.QueryString["ref"];
+
+    @* Define all the variables which will be used for pre-filling data on the form. *@
+    Guid _id = Guid.Empty;
+    string _name = string.Empty;
+    string _summary = string.Empty;
+    string _mobilephone = string.Empty;
+    DateTime? _startdate = DateTime.Now;
+    string _email = string.Empty;
+    string _additionalnotes = string.Empty;
+    string _hotels = string.Empty;
+    string _airport = string.Empty;
+    string _travelcompany = string.Empty;
+    string _trainingcourses = string.Empty;
+    string _pperequirements = string.Empty;
+    string _drugcheckdetails = string.Empty;
+    string _backgroundcheckdetails = string.Empty;
+    string _drugcheck = string.Empty;
+    string _backgroundcheck = string.Empty;
+    string _trainingneeded = string.Empty;
+    string _escortrequired = string.Empty;
+    string _unionsite = string.Empty;
+    string _errorMessage = string.Empty;
+    @* Connect to your dynamics instance. The identity is stored in web.config under app.settings. *@
+    var connection = ConfigurationManager.AppSettings["powelldev"];
+    var service = new CrmServiceClient(connection);
+
+    @* Don't render anything if the reference id is empty. This can be replaced with a redirect or a sample page rendering. *@
+    if (string.IsNullOrEmpty(ReferenceId))
+    {
+        _errorMessage = "This link is not valid.";
+    }
+    else
+    {
+        @* Search for the entity record using the reference. You can use the entity Id as well, but that exposes the GUID to the public and isn't revocable. *@
+        var RefQuery = new QueryExpression(EntityName);
+        RefQuery.ColumnSet.AddColumns("msdyn_name", "msdyn_workordersummary", "msdyn_timefrompromised", "new_primarysitecontactmobno", "new_sitecontactemail", "new_pperequirements", "new_sitespecificcourseinformation", "new_drugbackgrounddetails", "new_sitespecificinformation", "msdyn_followupnote", "new_sitesafetytrainingneeded", "mca_drugcheck", "mca_drugcheckdetails", "mca_backgroundcheck", "mca_backgroundcheckdetails", "mca_escortrequired", "mca_unionsite", "mca_preferredtravelcompany", "mca_closestairport", "mca_preferredhotels");
+        RefQuery.Criteria.AddCondition("mca_referenceid", ConditionOperator.Equal, ReferenceId);
+
+        var Results = service.RetrieveMultiple(RefQuery).Entities;
+
+        if (Results.Count > 0)
+        {
+            @* Assign the values of the returned entity to the variables you declared earlier. *@
+            var record = Results.FirstOrDefault();
+            _id = record.Id;
+            _name = EntityExtensions.GetString(record, obj.msdyn_name.Value, null);
+            _summary = EntityExtensions.GetString(record, obj.msdyn_workordersummary.Value, null);
+            _mobilephone = EntityExtensions.GetString(record, obj.new_primarysitecontactmobno.Value, null);
+            _startdate = EntityExtensions.GetDateTime(record, obj.msdyn_timefrompromised.Value);
+            _email = EntityExtensions.GetString(record, obj.new_sitecontactemail.Value, null);
+            _additionalnotes = EntityExtensions.GetString(record, obj.msdyn_followupnote.Value, null);
+            _hotels = EntityExtensions.GetString(record, obj.mca_preferredhotels.Value, null);
+            _airport = EntityExtensions.GetString(record, obj.mca_closestairport.Value, null);
+            _travelcompany = EntityExtensions.GetString(record, obj.mca_preferredtravelcompany.Value, null);
+            _trainingcourses = EntityExtensions.GetString(record, obj.new_sitespecificcourseinformation.Value, null);
+            _pperequirements = EntityExtensions.GetString(record, obj.new_pperequirements.Value, null);
+            _drugcheckdetails = EntityExtensions.GetString(record, obj.mca_drugcheckdetails.Value);
+            _backgroundcheckdetails = EntityExtensions.GetString(record, obj.mca_backgroundcheckdetails.Value, null);
+            _trainingneeded = Convert.ToString(EntityExtensions.GetBoolean(record, obj.new_sitesafetytrainingneeded.Value, false));
+            _drugcheck = Convert.ToString(EntityExtensions.GetBoolean(record, obj.mca_drugcheck.Value, false));
+            _backgroundcheck = Convert.ToString(EntityExtensions.GetBoolean(record, obj.mca_backgroundcheck.Value, false));
+            _escortrequired = Convert.ToString(EntityExtensions.GetBoolean(record, obj.mca_escortrequired.Value, false));
+            _unionsite = Convert.ToString(EntityExtensions.GetBoolean(record, obj.mca_unionsite.Value, false));
+        }
+        else
+        {
+            _errorMessage = "This link has expired.";
+        }
+    }
+    @* Close the connection. *@
+    service.Dispose();
+}
+@* In the body of the page, create a form using bootstrap UI components. in the action of the form, place your post function. *@
+<div class="container">
+    @* Error message in case the link is invalid. *@
+    <div class="text-center">
+        @{
+            if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="jumbotron h-auto m-auto">
+                    <p class="display-4">Whoops!</p>
+                    <p class="lead">@_errorMessage</p>
+                    <a class="btn btn-primary" href="https://www.powellind.com" role="button">Powell Industries</a>
+                </div>
+                return;
+            }
+        }
+    </div>
+
+    @* Company branding - remove if embedding *@
+    <div class="text-center">
+        <img src=@CompanyLogo class="p-3" width="250" alt="Logo" />
+        <h4>@CompanyName</h4>
+        <h5>@FormTitle</h5>
+    </div>
+
+    @* Build your form. In the action of the form, place the function which will execute the post request to dynamics. *@
+    <form method="post" action="@{HandlePostRequest();}">
+        <div class="card mt-3">
+            <h5 class="card-header">
+                Scope Of Work Per Accepted As Sold Quote
+            </h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <textarea class="form-control" rows="4" name="@obj.msdyn_workordersummary.Value">@_summary</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">
+                Mobilization Logistics
+            </h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="col-form-label">@obj.msdyn_name.Key</label>
+                    <input class="form-control" type="text" readonly name="@obj.msdyn_name.Value" value="@_name" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@obj.new_primarysitecontactmobno.Key</label>
+                    <input class="form-control" type="tel" name="mobilephone" value="@_mobilephone" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@obj.new_sitecontactemail.Key</label>
+                    <input class="form-control" type="email" name="email" value="@_email" />
+                </div>
+                <div class="alert alert-info mt-3 alert-dismissible" role="alert">
+                    *Although every effort will be made to accommodate requests, we cannot confirm a mobilization date until this form is completed in full and returned/reviewed.
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">
+                Site Access
+            </h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <div class="col">
+                        <input class="form-check-inline" type="checkbox" name="@obj.mca_drugcheck.Value" value="true" checked="@(_drugcheck == "True")" />
+                        <label class="form-check-label">@obj.mca_drugcheck.Key</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-check-inline" type="checkbox" name="@obj.mca_backgroundcheck.Value" value="true" checked="@(_backgroundcheck == "True")" />
+                        <label class="form-check-label">@obj.mca_backgroundcheck.Key</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-check-inline" type="checkbox" name="@obj.new_sitesafetytrainingneeded.Value" value="true" checked="@(_trainingneeded == "True")" />
+                        <label class="form-check-label">@obj.new_sitesafetytrainingneeded.Key</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-check-inline" type="checkbox" name="@obj.mca_unionsite.Value" value="true" checked="@(_unionsite == "True")" />
+                        <label class="form-check-label">@obj.mca_unionsite.Key</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-check-inline" type="checkbox" name="@obj.mca_escortrequired.Value" value="true" checked="@(_escortrequired == "True")" />
+                        <label class="form-check-label">@obj.mca_escortrequired.Key</label>
+                    </div>
+                    <div class="col text-center">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@obj.mca_drugcheckdetails.Key</label>
+                    <input class="form-control" type="text" name="@obj.mca_drugcheckdetails.Value" value="@_drugcheckdetails" />
+                    <label class="col-form-label">@obj.mca_backgroundcheckdetails.Key</label>
+                    <input class="form-control" type="text" name="@obj.mca_backgroundcheckdetails.Value" value="@_backgroundcheckdetails" />
+                    <label class="col-form-label">@obj.new_pperequirements.Key</label>
+                    <input class="form-control" type="text" name="@obj.new_pperequirements.Value" value="@_pperequirements" />
+                    <label class="col-form-label">@obj.new_sitespecificcourseinformation.Key</label>
+                    <input class="form-control" type="text" name="@obj.new_sitespecificcourseinformation.Value" value="@_trainingcourses" />
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">
+                For non-local mobilizations
+            </h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="col-form-label">@obj.mca_preferredhotels.Key</label>
+                    <input class="form-control" type="text" name="@obj.mca_preferredhotels.Value" value="@_hotels" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@obj.mca_closestairport.Key</label>
+                    <input class="form-control" type="text" name="@obj.mca_closestairport.Value" value="@_airport" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@obj.mca_preferredtravelcompany.Key</label>
+                    <input class="form-control" type="text" name="@obj.mca_preferredtravelcompany.Value" value="@_travelcompany" />
+                    <div class="alert alert-info mt-3 alert-dismissible" role="alert">
+                        *If Lodging or Transportation to be customer provided, please send detailed information to the PM as soon as it's available to potential avoid safety/security issues.  All customer arranged lodgings and transportation services must have detailed location, driver/service, information prior to mobilization.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">@obj.msdyn_followupnote.Key</h5>
+            <div class="card-body">
+                <textarea class="form-control" rows="4" name="@obj.msdyn_followupnote.Value">@_additionalnotes</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            @* In a hidden input, place the id of the entity you retrieved from the earlier call.*@
+            <input class="form-control" type="hidden" name="msdyn_workorderid" value="@_id.ToString()" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Send" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+@functions {
+
+    // Initialize EntityName //
+    protected string EntityName = "msdyn_workorder";
+
+    // Initiate the struct which will store your form labels and field names. This will make it easier for your to connect the labels, schema names, and data. //
+    private struct obj
+    {
+        internal static KeyValuePair<string, string> msdyn_name { get; private set; } = new KeyValuePair<string, string>("Order Reference", "msdyn_name");
+        internal static KeyValuePair<string, string> new_sitecontactemail { get; private set; } = new KeyValuePair<string, string>("Site Contact Email", "new_sitecontactemail");
+        internal static KeyValuePair<string, string> new_primarysitecontactmobno = new KeyValuePair<string, string>("Site Contact Mobile Phone", "new_primarysitecontactmobno");
+        internal static KeyValuePair<string, string> msdyn_workordersummary = new KeyValuePair<string, string>("Scope Of Work Per Accepted As Sold Quote", "msdyn_workordersummary");
+        internal static KeyValuePair<string, string> msdyn_followupnote = new KeyValuePair<string, string>("Additional Notes", "msdyn_followupnote");
+        internal static KeyValuePair<string, string> new_sitespecificinformation = new KeyValuePair<string, string>("", "new_sitespecificinformation");
+        internal static KeyValuePair<string, string> new_sitespecificcourseinformation = new KeyValuePair<string, string>("Site Specific Training (Course Information)", "new_sitespecificcourseinformation");
+        internal static KeyValuePair<string, string> new_pperequirements = new KeyValuePair<string, string>("Required PPE", "new_pperequirements");
+        internal static KeyValuePair<string, string> new_sitesafetytrainingneeded = new KeyValuePair<string, string>("Safety Training Required", "new_sitesafetytrainingneeded");
+        internal static KeyValuePair<string, string> new_drugbackgrounddetails = new KeyValuePair<string, string>("Specific Drug and Background Screening Required", "new_drugbackgrounddetails");
+        internal static KeyValuePair<string, string> mca_drugcheckdetails = new KeyValuePair<string, string>("Specific Drug Screening Required", "mca_drugcheckdetails");
+        internal static KeyValuePair<string, string> mca_backgroundcheckdetails = new KeyValuePair<string, string>("Specific Background Check Required", "mca_backgroundcheckdetails");
+        internal static KeyValuePair<string, string> mca_closestairport = new KeyValuePair<string, string>("Closest Airport", "mca_closestairport");
+        internal static KeyValuePair<string, string> mca_preferredtravelcompany = new KeyValuePair<string, string>("Recommended Transportation Company", "mca_preferredtravelcompany");
+        internal static KeyValuePair<string, string> mca_preferredhotels = new KeyValuePair<string, string>("Recommended Hotel(s) near the site", "mca_preferredhotels");
+        internal static KeyValuePair<string, string> msdyn_timefrompromised = new KeyValuePair<string, string>("Start Date", "msdyn_timefrompromised");
+        internal static KeyValuePair<string, string> mca_drugcheck = new KeyValuePair<string, string>("Drug Check Required?", "mca_drugcheck");
+        internal static KeyValuePair<string, string> mca_backgroundcheck = new KeyValuePair<string, string>("Background Check Required?", "mca_backgroundcheck");
+        internal static KeyValuePair<string, string> mca_unionsite = new KeyValuePair<string, string>("Is this a Union site?", "mca_unionsite");
+        internal static KeyValuePair<string, string> mca_escortrequired = new KeyValuePair<string, string>("Escort Required while On-Site?", "mca_escortrequired");
+    }
+
+    // This is the function that sends form data to your dynamics instance. You open the connection, map the form fields to dynamics entity, and update the record. //
+    protected void HandlePostRequest()
+    {
+        if (IsPost)
+        {
+            var _connectionString = ConfigurationManager.AppSettings["powelldev"];
+            using (var service = new CrmServiceClient(_connectionString))
+            {
+                var rec = new Entity(EntityName, Guid.Parse(Request.Form["msdyn_workorderid"]));
+                rec[obj.msdyn_workordersummary.Value] = Request.Form[obj.msdyn_workordersummary.Value];
+                rec[obj.new_primarysitecontactmobno.Value] = Request.Form[obj.new_primarysitecontactmobno.Value];
+                rec[obj.new_sitecontactemail.Value] = Request.Form[obj.new_sitecontactemail.Value];
+                rec[obj.msdyn_followupnote.Value] = Request.Form[obj.msdyn_followupnote.Value];
+                rec[obj.mca_preferredhotels.Value] = Request.Form[obj.mca_preferredhotels.Value];
+                rec[obj.mca_closestairport.Value] = Request.Form[obj.mca_closestairport.Value];
+                rec[obj.mca_preferredtravelcompany.Value] = Request.Form[obj.mca_preferredtravelcompany.Value];
+                rec[obj.new_sitespecificcourseinformation.Value] = Request.Form[obj.new_sitespecificcourseinformation.Value];
+                rec[obj.new_pperequirements.Value] = Request.Form[obj.new_pperequirements.Value];
+                rec[obj.mca_drugcheckdetails.Value] = Request.Form[obj.mca_drugcheckdetails.Value];
+                rec[obj.mca_backgroundcheckdetails.Value] = Request.Form[obj.mca_backgroundcheckdetails.Value];
+                rec[obj.new_sitesafetytrainingneeded.Value] = Convert.ToBoolean(Request.Form[obj.new_sitesafetytrainingneeded.Value]);
+                rec[obj.mca_drugcheck.Value] = Convert.ToBoolean(Request.Form[obj.mca_drugcheck.Value]);
+                rec[obj.mca_backgroundcheck.Value] = Convert.ToBoolean(Request.Form[obj.mca_backgroundcheck.Value]);
+                rec[obj.mca_escortrequired.Value] = Convert.ToBoolean(Request.Form[obj.mca_escortrequired.Value]);
+                rec[obj.mca_unionsite.Value] = Convert.ToBoolean(Request.Form[obj.mca_unionsite.Value]);
+                rec[obj.new_drugbackgrounddetails.Value] = "Drug Screening: " + Request.Form[obj.mca_drugcheckdetails.Value] + "\nBackground Checks: " + Request.Form[obj.mca_backgroundcheckdetails.Value];
+                rec[obj.new_sitespecificinformation.Value] = "Escort Required: " + Request.Form[obj.mca_escortrequired.Value] + "\nUnion Site: " + Request.Form[obj.mca_unionsite.Value] + "\nClosest Airport: " + Request.Form[obj.mca_closestairport.Value] + "\nTravel Company: " + Request.Form[obj.mca_preferredtravelcompany.Value] + "\nPreferred Hotels: " + Request.Form[obj.mca_preferredhotels.Value];
+                rec["mca_referenceid"] = null;
+                rec["msdyn_substatus"] = new EntityReference("msdyn_workordersubstatus", Guid.Parse("f35c204a-6d68-ea11-a811-000d3a3682ac"));
+
+                service.Update(rec);
+            }
+            // Redirect to another page. I haven't added validation to this page yet. //
+            Response.Redirect("~/workorder/success");
+        }
+    }
+}
