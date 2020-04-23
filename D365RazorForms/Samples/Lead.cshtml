@@ -1,0 +1,173 @@
+﻿@using Microsoft.Xrm.Sdk
+@using Microsoft.Xrm.Sdk.Query
+@using Microsoft.Xrm.Tooling.Connector
+@using System.Collections.Generic
+@using System.Configuration
+@using Microsoft.Xrm.Sdk.Messages
+@using D365RazorForms
+@using Microsoft.Xrm.Sdk.Metadata
+@{
+    Layout = "~/Layouts/_Layout" + Request.QueryString["lo"] + ".cshtml";
+}
+
+<div class="container">
+
+    <form method="post" action="@{CreateRecordPostRequest();}">
+        <div class="card my-3">
+            <h5 class="card-header">Submit a Lead</h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="col-form-label">@record.firstname.Key</label>
+                    <input class="form-control" type="text" name="@record.firstname.Value" required="required" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@record.lastname.Key</label>
+                    <input class="form-control" type="text" name="@record.lastname.Value" required="required" data-error="Last Name is required." placeholder="Last name is required" />
+                </div>
+
+                @*Adding text decorations around an input control.*@
+                <div class="form-group">
+                    <label class="col-form-label">@record.emailaddress1.Key</label>
+                    <input class="form-control" type="email" name="@record.emailaddress1.Value" aria-describedby="emailHelp" placeholder="Email is required" required="required" data-error="Email is required." />
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with a third party without your implicit consent.</small>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@record.mobilephone.Key</label>
+                    <input class="form-control" type="tel" name="@record.mobilephone.Value" aria-describedby="phoneHelp" />
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your phone number with a third party without your implicit consent.</small>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@record.websiteurl.Key</label>
+                    <input class="form-control" type="url" name="@record.websiteurl.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@record.address1_line1.Key</label>
+                    <input class="form-control" type="text" name="@record.address1_line1.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@record.address1_line2.Key</label>
+                    <input class="form-control" type="text" name="@record.address1_line2.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@record.address1_city.Key</label>
+                    <input class="form-control" type="text" name="@record.address1_city.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@record.address1_stateorprovince.Key</label>
+                    <input class="form-control" type="text" name="@record.address1_stateorprovince.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" for="@record.address1_postalcode.Value">@record.address1_postalcode.Key</label>
+                    <input class="form-control" type="text" name="@record.address1_postalcode.Value" id="@record.address1_postalcode.Value" />
+                </div>
+
+                @*Text area for message.*@
+                <div class="form-group">
+                    <div class="form-group">
+                        <label class="col-form-label" for="@record.description.Value">@record.description.Key</label>
+                        <textarea class="form-control" rows="4" name="@record.description.Value" placeholder="@record.description.Key"></textarea>
+                    </div>
+                </div>
+
+                @*Getting option set values from an optionset on the record.*@
+                <div class="form-group">
+                    <label for="@record.leadsourcecode.Value">@record.leadsourcecode.Key</label>
+                    <select class="form-control" id="@record.leadsourcecode.Value" name="@record.leadsourcecode.Value">
+                        @{
+                            var _connectionString = ConfigurationManager.AppSettings[connection];
+
+                            using (var service = new CrmServiceClient(_connectionString))
+                            {
+                                var contactmethod = EntityExtensions.GetOptionSetMetadata("lead", "leadsourcecode", service);
+                                foreach (var m in contactmethod)
+                                {
+                                    <option value="@m.Value">@m.Key</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+                @*Submitting the post request which calls the post action.*@
+            <div class="form-group">
+                @AntiForgery.GetHtml()
+                <input type="submit" value="Send" class="btn btn-primary" />
+            </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@functions {
+
+    private string connection = "default";
+    private string errorMessage = string.Empty;
+
+    private struct record
+    {
+        internal static KeyValuePair<string, string> firstname { get; private set; } =
+            new KeyValuePair<string, string>("First Name", "firstname");
+        internal static KeyValuePair<string, string> lastname { get; private set; } =
+            new KeyValuePair<string, string>("Last Name", "lastname");
+        internal static KeyValuePair<string, string> emailaddress1 { get; private set; } =
+            new KeyValuePair<string, string>("Email Address", "emailaddress1");
+        internal static KeyValuePair<string, string> mobilephone { get; private set; } =
+            new KeyValuePair<string, string>("Mobile Phone", "mobilephone");
+        internal static KeyValuePair<string, string> address1_line1 { get; private set; } =
+            new KeyValuePair<string, string>("Street 1", "address1_line1");
+        internal static KeyValuePair<string, string> address1_line2 { get; private set; } =
+            new KeyValuePair<string, string>("Street 2", "address1_line2");
+        internal static KeyValuePair<string, string> address1_city { get; private set; } =
+            new KeyValuePair<string, string>("City", "address1_city");
+        internal static KeyValuePair<string, string> address1_stateorprovince { get; private set; } =
+            new KeyValuePair<string, string>("State", "address1_stateorprovince");
+        internal static KeyValuePair<string, string> address1_postalcode { get; private set; } =
+            new KeyValuePair<string, string>("Zip or Postal Code", "address1_postalcode");
+        internal static KeyValuePair<string, string> leadsourcecode { get; private set; } =
+            new KeyValuePair<string, string>("How did you hear about us?", "leadsourcecode");
+        internal static KeyValuePair<string, string> websiteurl { get; private set; } =
+            new KeyValuePair<string, string>("Website", "websiteurl");
+        internal static KeyValuePair<string, string> description { get; private set; } =
+            new KeyValuePair<string, string>("Message", "description");
+    };
+
+
+    protected void CreateRecordPostRequest()
+    {
+        if (IsPost)
+        {
+            AntiForgery.Validate();
+            try
+            {
+                var _connectionString = ConfigurationManager.AppSettings[connection];
+                if (Validation.IsValid())
+                {
+                    using (var service = new CrmServiceClient(_connectionString))
+                    {
+                        var rec = new Entity("lead");
+                        rec["subject"] = Request.Form[@record.firstname.Value] + " " + Request.Form[@record.lastname.Value];
+                        rec[@record.description.Value] = Request.Form[@record.description.Value];
+                        rec[@record.firstname.Value] = Request.Form[@record.firstname.Value];
+                        rec[@record.lastname.Value] = Request.Form[@record.lastname.Value];
+                        rec[@record.emailaddress1.Value] = Request.Form[@record.emailaddress1.Value];
+                        rec[@record.mobilephone.Value] = Request.Form[@record.mobilephone.Value];
+                        rec[@record.address1_line1.Value] = Request.Form[@record.address1_line1.Value];
+                        rec[@record.address1_line2.Value] = Request.Form[@record.address1_line2.Value];
+                        rec[@record.address1_city.Value] = Request.Form[@record.address1_city.Value];
+                        rec[@record.address1_stateorprovince.Value] = Request.Form[@record.address1_stateorprovince.Value];
+                        rec[@record.address1_postalcode.Value] = Request.Form[@record.address1_postalcode.Value];
+                        rec[@record.leadsourcecode.Value] = new OptionSetValue(Convert.ToInt32(Request.Form[@record.leadsourcecode.Value]));
+
+                        service.Create(rec);
+                    }
+                    Response.Redirect("Success");
+                }
+            }
+            catch (HttpRequestValidationException ex)
+            {
+                errorMessage = "An error has occurred while processing this request.";
+            }
+        }
+    }
+}

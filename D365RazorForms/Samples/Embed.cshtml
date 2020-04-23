@@ -1,0 +1,151 @@
+﻿@using Microsoft.Xrm.Sdk
+@using Microsoft.Xrm.Sdk.Query
+@using Microsoft.Xrm.Tooling.Connector
+@using System.Collections.Generic
+@using System.Configuration
+@using Microsoft.Xrm.Sdk.Messages
+@using D365RazorForms
+@using Microsoft.Xrm.Sdk.Metadata
+@{
+    Layout = "~/Layouts/_Layout" + Request.QueryString["lo"] + ".cshtml";
+
+}
+
+<div class="container">
+
+    <form method="post" action="@{CreateRecordPostRequest();}">
+        <div class="card my-3">
+            <h5 class="card-header">Create a Contact</h5>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="col-form-label">@contact.firstname.Key</label>
+                    <input class="form-control" type="text" name="@contact.firstname.Value" required="required" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@contact.lastname.Key</label>
+                    <input class="form-control" type="text" name="@contact.lastname.Value" required="required" data-error="Last Name is required." placeholder="Last name is required" />
+                </div>
+
+                @*Adding text decorations around an input control.*@
+                <div class="form-group">
+                    <label class="col-form-label">@contact.emailaddress1.Key</label>
+                    <input class="form-control" type="email" name="@contact.emailaddress1.Value" aria-describedby="emailHelp" placeholder="Email is required" required="required" data-error="Email is required." />
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with a third party without your implicit consent.</small>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@contact.mobilephone.Key</label>
+                    <input class="form-control" type="tel" name="@contact.mobilephone.Value" aria-describedby="phoneHelp" />
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your phone number with a third party without your implicit consent.</small>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@contact.websiteurl.Key</label>
+                    <input class="form-control" type="url" name="@contact.websiteurl.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@contact.address1_line1.Key</label>
+                    <input class="form-control" type="text" name="@contact.address1_line1.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@contact.address1_line2.Key</label>
+                    <input class="form-control" type="text" name="@contact.address1_line2.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@contact.address1_city.Key</label>
+                    <input class="form-control" type="text" name="@contact.address1_city.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">@contact.address1_stateorprovince.Key</label>
+                    <input class="form-control" type="text" name="@contact.address1_stateorprovince.Value" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" for="@contact.address1_postalcode.Value">@contact.address1_postalcode.Key</label>
+                    <input class="form-control" type="text" name="@contact.address1_postalcode.Value" id="@contact.address1_postalcode.Value" />
+                </div>
+
+                @*Getting option set values from an optionset on the record.*@
+                <div class="form-group">
+                    <label for="@contact.preferredcontactmethodcode.Value">@contact.preferredcontactmethodcode.Key</label>
+                    <select class="form-control" id="@contact.preferredcontactmethodcode.Value">
+                        @{
+                            var _connectionString = ConfigurationManager.AppSettings[connection];
+
+                            using (var service = new CrmServiceClient(_connectionString))
+                            {
+                                var contactmethod = EntityExtensions.GetOptionSetMetadata("contact", "preferredcontactmethodcode", service);
+                                foreach (var m in contactmethod)
+                                {
+                                    <option value="@m.Value">@m.Key</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+                @*Submitting the post request which calls the post action.*@
+                <div class="form-group">
+                    <input type="submit" value="Send" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@functions {
+
+    private string connection = "default";
+
+    private struct contact
+    {
+        internal static KeyValuePair<string, string> firstname { get; private set; } =
+            new KeyValuePair<string, string>("First Name", "firstname");
+        internal static KeyValuePair<string, string> lastname { get; private set; } =
+            new KeyValuePair<string, string>("Last Name", "lastname");
+        internal static KeyValuePair<string, string> emailaddress1 { get; private set; } =
+            new KeyValuePair<string, string>("Email Address", "emailaddress1");
+        internal static KeyValuePair<string, string> mobilephone { get; private set; } =
+            new KeyValuePair<string, string>("Mobile Phone", "mobilephone");
+        internal static KeyValuePair<string, string> address1_line1 { get; private set; } =
+            new KeyValuePair<string, string>("Street 1", "address1_line1");
+        internal static KeyValuePair<string, string> address1_line2 { get; private set; } =
+            new KeyValuePair<string, string>("Street 2", "address1_line2");
+        internal static KeyValuePair<string, string> address1_city { get; private set; } =
+            new KeyValuePair<string, string>("City", "address1_city");
+        internal static KeyValuePair<string, string> address1_stateorprovince { get; private set; } =
+            new KeyValuePair<string, string>("State", "address1_stateorprovince");
+        internal static KeyValuePair<string, string> address1_postalcode { get; private set; } =
+            new KeyValuePair<string, string>("Zip or Postal Code", "address1_postalcode");
+        internal static KeyValuePair<string, string> preferredcontactmethodcode { get; private set; } =
+            new KeyValuePair<string, string>("Preferred Method of Contact", "preferredcontactmethodcode");
+        internal static KeyValuePair<string, string> websiteurl { get; private set; } =
+            new KeyValuePair<string, string>("Website", "websiteurl");
+    };
+
+
+    protected void CreateRecordPostRequest()
+    {
+        if (IsPost)
+        {
+            var _connectionString = ConfigurationManager.AppSettings[connection];
+
+            using (var service = new CrmServiceClient(_connectionString))
+            {
+                var rec = new Entity("contact");
+                rec[@contact.firstname.Value] = Request.Form[@contact.firstname.Value];
+                rec[@contact.lastname.Value] = Request.Form[@contact.lastname.Value];
+                rec[@contact.emailaddress1.Value] = Request.Form[@contact.emailaddress1.Value];
+                rec[@contact.mobilephone.Value] = Request.Form[@contact.mobilephone.Value];
+                rec[@contact.address1_line1.Value] = Request.Form[@contact.address1_line1.Value];
+                rec[@contact.address1_line2.Value] = Request.Form[@contact.address1_line2.Value];
+                rec[@contact.address1_city.Value] = Request.Form[@contact.address1_city.Value];
+                rec[@contact.address1_stateorprovince.Value] = Request.Form[@contact.address1_stateorprovince.Value];
+                rec[@contact.address1_postalcode.Value] = Request.Form[@contact.address1_postalcode.Value];
+                rec[@contact.preferredcontactmethodcode.Value] = Request.Form[@contact.preferredcontactmethodcode.Value];
+
+                service.Create(rec);
+            }
+
+            Response.Redirect("Success");
+        }
+    }
+}

@@ -134,9 +134,9 @@ C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\bin\Microsoft.Xr
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\bin\Microsoft.Xrm.Sdk.Workflow.xml
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\bin\Microsoft.Xrm.Tooling.Connector.xml
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\bin\Newtonsoft.Json.xml
-C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.csprojAssemblyReference.cache
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.csproj.CoreCompileInputs.cache
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.csproj.CopyComplete
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.dll
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.pdb
+C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\bin\RestSharp.dll
+C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\bin\RestSharp.xml

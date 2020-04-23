@@ -41,7 +41,7 @@
     string _unionsite = string.Empty;
     string _errorMessage = string.Empty;
     @* Connect to your dynamics instance. The identity is stored in web.config under app.settings. *@
-    var connection = ConfigurationManager.AppSettings["powelldev"];
+    var connection = ConfigurationManager.AppSettings[DefaultConnection];
     var service = new CrmServiceClient(connection);
 
     @* Don't render anything if the reference id is empty. This can be replaced with a redirect or a sample page rendering. *@
@@ -230,6 +230,8 @@
 
     // Initialize EntityName //
     protected string EntityName = "msdyn_workorder";
+    protected string DefaultConnection = "powelldev";
+
 
     // Initiate the struct which will store your form labels and field names. This will make it easier for your to connect the labels, schema names, and data. //
     private struct obj
@@ -261,7 +263,7 @@
     {
         if (IsPost)
         {
-            var _connectionString = ConfigurationManager.AppSettings["powelldev"];
+            var _connectionString = ConfigurationManager.AppSettings[DefaultConnection];
             using (var service = new CrmServiceClient(_connectionString))
             {
                 var rec = new Entity(EntityName, Guid.Parse(Request.Form["msdyn_workorderid"]));

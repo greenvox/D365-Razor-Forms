@@ -8,7 +8,7 @@
 @using D365RazorForms
 
 @{
-    Layout = "~/Layouts/_Layout.cshtml";
+    Layout = "~/Layouts/_Layout" + Request.QueryString["lo"] +".cshtml";
 
     var CompanyLogo = "https://i.imgur.com/mJf4mXA.png";
     var FormTitle = "Add a new contact";
