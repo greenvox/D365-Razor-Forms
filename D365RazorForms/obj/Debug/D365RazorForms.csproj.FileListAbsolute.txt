@@ -69,3 +69,4 @@ C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365Ra
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.csproj.CopyComplete
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.dll
 C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.pdb
+C:\Users\KhanSarfraz\source\repos\D365RazorForms\D365RazorForms\obj\Debug\D365RazorForms.csprojAssemblyReference.cache
