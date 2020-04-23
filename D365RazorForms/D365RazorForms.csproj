@@ -135,7 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
-    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml" />
     <Content Include="bin\Microsoft.Crm.Sdk.Proxy.dll" />
     <Content Include="bin\Microsoft.Web.Infrastructure.dll" />
     <Content Include="bin\Microsoft.Xrm.Sdk.dll" />
@@ -144,7 +143,13 @@
     <Content Include="bin\System.Web.WebPages.Deployment.dll" />
     <Content Include="bin\System.Web.WebPages.dll" />
     <Content Include="bin\System.Web.WebPages.Razor.dll" />
+    <Content Include="obj\Debug\D365RazorForms.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\D365RazorForms.dll" />
+    <Content Include="obj\Debug\D365RazorForms.pdb" />
     <Content Include="Scripts\autocomplete.js" />
+    <Content Include="Styles\autocomplete.css" />
+    <Content Include="Styles\bootstrap.css" />
+    <Content Include="Styles\bootstrap.min.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +166,10 @@
     <Content Include="Layouts\_LayoutLux.cshtml" />
     <Content Include="Layouts\_LayoutFlatly.cshtml" />
     <Content Include="Layouts\_LayoutSpaceLab.cshtml" />
+    <Content Include="obj\Debug\D365RazorForms.csproj.CopyComplete" />
+    <Content Include="obj\Debug\D365RazorForms.csproj.CoreCompileInputs.cache" />
+    <Content Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <Content Include="Default.cshtml" />
     <None Include="packages.config" />
     <Content Include="Samples\Create.cshtml" />
     <Content Include="Samples\Autocomplete.cshtml" />
@@ -169,6 +178,8 @@
     <Content Include="Samples\Embed.cshtml" />
     <Content Include="Samples\Lead.cshtml" />
     <None Include="Properties\PublishProfiles\DevRazorForms - Web Deploy.pubxml" />
+    <Content Include="Styles\_bootswatch.scss" />
+    <Content Include="Styles\_variables.scss" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -178,7 +189,10 @@
     <Content Include="WorkOrder\update.cshtml" />
     <Content Include="WorkOrder\success.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="obj\Debug\ProfileTransformWebConfig\transformed\" />
+    <Folder Include="obj\Debug\TempPE\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
