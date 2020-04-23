@@ -141,6 +141,7 @@
     <Content Include="bin\System.Web.WebPages.Deployment.dll" />
     <Content Include="bin\System.Web.WebPages.dll" />
     <Content Include="bin\System.Web.WebPages.Razor.dll" />
+    <Content Include="Scripts\autocomplete.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,10 @@
     <Content Include="Layouts\_Layout.cshtml" />
     <Content Include="Connections.config" />
     <None Include="packages.config" />
+    <Content Include="Samples\Create.cshtml" />
+    <Content Include="Samples\Autocomplete.cshtml" />
+    <Content Include="Samples\Update.cshtml" />
+    <Content Include="Samples\Success.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -160,9 +165,7 @@
     <Content Include="WorkOrder\update.cshtml" />
     <Content Include="WorkOrder\success.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
